@@ -2,7 +2,6 @@ package apikey_test
 
 import (
 	"context"
-	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -12,11 +11,12 @@ import (
 )
 
 type dummyUser struct{ id, key string }
-func (d dummyUser) GetID() string                 { return d.id }
+
+func (d dummyUser) GetID() string                         { return d.id }
 func (d dummyUser) GetAttributes() map[string]interface{} { return nil }
 
 func TestAuthenticate_NoKey(t *testing.T) {
-	s := apikey.New(apikey.Config{Store: stores.NewInMemoryUserStore()})
+	s := apikey.New(apikey.Config{Store: stores.NewAPIKeyStore(nil)})
 	req := httptest.NewRequest("GET", "/", nil)
 	_, err := s.Authenticate(context.Background(), req)
 	if err != core.ErrUnauthorized {
@@ -26,7 +26,8 @@ func TestAuthenticate_NoKey(t *testing.T) {
 
 func TestAuthenticate_Header(t *testing.T) {
 	dummy := dummyUser{"u1", "key123"}
-	s := apikey.New(apikey.Config{Store: stores.NewInMemoryUserStore(dummy), CredKey: "id"})
+	store := stores.NewAPIKeyStore(map[string]core.User{"key123": dummy})
+	s := apikey.New(apikey.Config{Store: store, CredKey: "id"})
 
 	req := httptest.NewRequest("GET", "/", nil)
 	req.Header.Set("X-API-Key", "key123")
@@ -38,7 +39,8 @@ func TestAuthenticate_Header(t *testing.T) {
 
 func TestAuthenticate_QueryParam(t *testing.T) {
 	dummy := dummyUser{"u2", "key456"}
-	s := apikey.New(apikey.Config{Store: stores.NewInMemoryUserStore(dummy), CredKey: "id", QueryParam: "api_key"})
+	store2 := stores.NewAPIKeyStore(map[string]core.User{"key456": dummy})
+	s := apikey.New(apikey.Config{Store: store2, CredKey: "id", QueryParam: "api_key"})
 
 	req := httptest.NewRequest("GET", "/?api_key=key456", nil)
 	user, err := s.Authenticate(context.Background(), req)

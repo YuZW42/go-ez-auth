@@ -4,16 +4,17 @@ import (
 	"context"
 	"net/http"
 
-	"go-ez-auth/core"
+	"github.com/yourusername/go-ez-auth/core"
+
 	"github.com/gorilla/sessions"
 )
 
 // Config holds settings for the Session strategy.
 type Config struct {
-	Store       sessions.Store   // Gorilla sessions store
-	SessionName string           // name of the session (cookie)
-	Key         string           // key in session.Values for user ID
-	UserStore   core.UserStore   // backend to lookup users
+	Store       sessions.Store // Gorilla sessions store
+	SessionName string         // name of the session (cookie)
+	Key         string         // key in session.Values for user ID
+	UserStore   core.UserStore // backend to lookup users
 }
 
 // Strategy implements core.Strategy for session-based auth.
@@ -62,4 +63,16 @@ func (s *Strategy) Authenticate(ctx context.Context, r *http.Request) (core.User
 		return nil, core.ErrUnauthorized
 	}
 	return user, nil
+}
+
+// Login saves the user's ID in a new session and protects against fixation by issuing a fresh cookie.
+func (s *Strategy) Login(w http.ResponseWriter, r *http.Request, user core.User) error {
+	sess, err := s.config.Store.Get(r, s.config.SessionName)
+	if err != nil {
+		return core.ErrUnauthorized
+	}
+	// Set user ID in session
+	sess.Values[s.config.Key] = user.GetID()
+	// Save writes a new cookie with updated data
+	return sess.Save(r, w)
 }

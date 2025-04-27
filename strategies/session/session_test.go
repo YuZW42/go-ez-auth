@@ -70,3 +70,31 @@ func TestAuthenticate_ValidSession(t *testing.T) {
 		t.Fatalf("expected user u1, got %v %v", user, err)
 	}
 }
+
+// TestLogin_ThenAuthenticate ensures that Login issues a cookie and Authenticate recognizes it
+func TestLogin_ThenAuthenticate(t *testing.T) {
+	store := sessions.NewCookieStore([]byte("secret"))
+	dummy := dummyUser{"u1"}
+	us := stores.NewInMemoryUserStore(dummy)
+	s := session.New(session.Config{Store: store, SessionName: "sess", Key: "user_id", UserStore: us})
+
+	// perform login
+	req := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+	if err := s.Login(w, req, dummy); err != nil {
+		t.Fatalf("Login error: %v", err)
+	}
+	// attach cookie to new request
+	req2 := httptest.NewRequest("GET", "/", nil)
+	for _, c := range w.Result().Cookies() {
+		req2.AddCookie(c)
+	}
+	// authenticate
+	user, err := s.Authenticate(context.Background(), req2)
+	if err != nil {
+		t.Fatalf("Authenticate after Login error: %v", err)
+	}
+	if user.GetID() != "u1" {
+		t.Errorf("expected user u1, got %s", user.GetID())
+	}
+}

@@ -1,3 +1,7 @@
+// Package core defines the foundational interfaces and error types for go-ez-auth.
+// It includes Strategy, User, and UserStore interfaces, plus a strategy registry and common errors.
+// Core logic is framework-agnostic and used by middleware adapters.
+
 package core
 
 import (

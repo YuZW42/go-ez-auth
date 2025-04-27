@@ -66,12 +66,17 @@ go test ./strategies/apikey -v
 go test ./middleware -v
 ```
 
-## Phase 4: Security Enhancements & Features
+## Phase 4: Security Enhancements & Features (In Progress)
 
-- CSRF protection
-- Advanced session security (fixation, flags)
-- OAuth2 / OIDC strategy
-- Password hashing (bcrypt) for local strategy
+- **CSRF Protection**: `middleware.CSRFMiddleware` using `github.com/gorilla/csrf` for net/http. Tests in `middleware/csrf_test.go`.
+- **Session Security**: HTTP-only, Secure, and SameSite flags set by default in `strategies/session` Setup. Session fixation protection coming.
+- **OAuth2 / OIDC Strategy**: TODO: implement with `golang.org/x/oauth2`.
+- **Local Strategy (username/password)**: TODO: integrate `bcrypt` via `golang.org/x/crypto/bcrypt`.
+
+**Test Phase 4**
+```bash
+go test ./middleware -v
+```
 
 ## Phase 5: Documentation, Tooling & Examples
 

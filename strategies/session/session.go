@@ -31,8 +31,17 @@ func (s *Strategy) Name() string {
 	return "session"
 }
 
-// Setup is a no-op for Session strategy.
+// Setup configures cookie options for secure sessions if using CookieStore.
 func (s *Strategy) Setup() error {
+	// Apply secure defaults to CookieStore
+	if cs, ok := s.config.Store.(*sessions.CookieStore); ok {
+		cs.Options = &sessions.Options{
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteLaxMode,
+		}
+	}
 	return nil
 }
 

@@ -49,6 +49,15 @@ func ListStrategies() []string {
 	return names
 }
 
+// ContextUserKey is the context key for storing the authenticated User.
+const ContextUserKey = "go-ez-auth-user"
+
+// UserFromContext retrieves the authenticated User from context.
+func UserFromContext(ctx context.Context) (User, bool) {
+	user, ok := ctx.Value(ContextUserKey).(User)
+	return user, ok
+}
+
 // Standard error variables.
 var (
 	ErrUnauthorized       = errors.New("unauthorized")

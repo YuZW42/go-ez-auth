@@ -39,20 +39,32 @@ go test ./stores
 go test ./... -cover
 ```
 
-## Phase 2: Core Strategies (In Progress)
+## Phase 2: Core Strategies (Completed)
 
-- **JWT Strategy** (`strategies/jwt`)
-- **Session Strategy** (`strategies/session`)
-- **API Key Strategy** (`strategies/apikey`)
+- **JWT Strategy** (`strategies/jwt`): token-based auth with `github.com/golang-jwt/jwt/v5`.
+- **Session Strategy** (`strategies/session`): cookie-based sessions using `github.com/gorilla/sessions`.
+- **API Key Strategy** (`strategies/apikey`): header & query-param lookup with `stores.APIKeyStore`.
 - *(Stretch)* Basic Auth Strategy
 
-## Phase 3: Middleware Adapters (Upcoming)
+**Test Phase 2**
+```bash
+go test ./strategies/jwt -v
+go test ./strategies/session -v
+go test ./strategies/apikey -v
+```
 
-- Generic `AuthenticateRequest` core function
-- `net/http` middleware
-- Gin middleware adapter
-- Echo middleware adapter
+## Phase 3: Middleware Adapters (Completed)
+
+- Generic `AuthenticateRequest` in `middleware/nethttp.go`.
+- `net/http` middleware implementation & tests.
+- Gin middleware adapter & tests.
+- Echo middleware adapter & tests.
 - *(Optional)* Fiber adapter
+
+**Test Phase 3**
+```bash
+go test ./middleware -v
+```
 
 ## Phase 4: Security Enhancements & Features
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/yourusername/go-ez-auth/core"
+	"go-ez-auth/core"
 
 	"github.com/gorilla/sessions"
 )

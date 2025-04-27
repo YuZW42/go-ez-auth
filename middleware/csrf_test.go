@@ -5,8 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gorilla/csrf"
 	"go-ez-auth/middleware"
+
+	"github.com/gorilla/csrf"
 )
 
 func TestCSRFMiddleware_GeneratesToken(t *testing.T) {
